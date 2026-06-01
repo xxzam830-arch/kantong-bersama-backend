@@ -1,0 +1,2 @@
+[start]
+cmd = "node server-v2.js"
