@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kantong Bersama – Transfer E-Wallet Tanpa KTP</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1A6BFF;
+    --blue-dark: #0047CC;
+    --blue-light: #EEF4FF;
+    --blue-mid: #3D85FF;
+    --white: #FFFFFF;
+    --gray-50: #F7F9FC;
+    --gray-100: #EFF2F7;
+    --gray-400: #9BA5B7;
+    --gray-600: #5A6478;
+    --gray-900: #0F1923;
+    --success: #00C48C;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(26,107,255,0.10);
+    --shadow-lg: 0 8px 40px rgba(26,107,255,0.18);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--white); color:var(--gray-900); overflow-x:hidden; }
+  h1,h2,h3,h4,.brand { font-family:'Plus Jakarta Sans',sans-serif; }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 40px;
+    background:rgba(255,255,255,0.92); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--gray-100);
+  }
+  .brand { font-size:20px; font-weight:800; color:var(--blue); letter-spacing:-0.5px; }
+  .brand span { color:var(--gray-900); }
+  .nav-links { display:flex; gap:32px; list-style:none; }
+  .nav-links a { text-decoration:none; color:var(--gray-600); font-size:15px; font-weight:500; transition:color .2s; }
+  .nav-links a:hover { color:var(--blue); }
+  .nav-cta {
+    background:var(--blue); color:white; border:none; border-radius:12px;
+    padding:10px 22px; font-size:15px; font-weight:600; cursor:pointer;
+    font-family:'Plus Jakarta Sans',sans-serif; transition:all .2s;
+  }
+  .nav-cta:hover { background:var(--blue-dark); transform:translateY(-1px); }
+
+  /* PAGES */
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height:100vh; padding:140px 40px 80px;
+    background:linear-gradient(160deg,#F0F6FF 0%,#FFFFFF 60%);
+    display:flex; align-items:center; position:relative; overflow:hidden;
+  }
+  .hero::before {
+    content:''; position:absolute; top:-100px; right:-100px;
+    width:500px; height:500px;
+    background:radial-gradient(circle,rgba(26,107,255,.08) 0%,transparent 70%);
+    border-radius:50%;
+  }
+  .hero::after {
+    content:''; position:absolute; bottom:-50px; left:-50px;
+    width:300px; height:300px;
+    background:radial-gradient(circle,rgba(0,196,140,.06) 0%,transparent 70%);
+    border-radius:50%;
+  }
+  .hero-inner {
+    max-width:1100px; margin:0 auto;
+    display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;
+  }
+  .hero-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--blue-light); color:var(--blue);
+    padding:6px 14px; border-radius:99px; font-size:13px; font-weight:600; margin-bottom:20px;
+  }
+  .hero-badge .dot { width:6px; height:6px; border-radius:50%; background:var(--blue); animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .hero h1 { font-size:52px; font-weight:800; line-height:1.1; letter-spacing:-1.5px; margin-bottom:20px; }
+  .hero h1 .accent { color:var(--blue); }
+  .hero p { font-size:17px; color:var(--gray-600); line-height:1.7; margin-bottom:36px; max-width:420px; }
+  .hero-btns { display:flex; gap:14px; flex-wrap:wrap; }
+  .btn-primary {
+    background:var(--blue); color:white; border:none; border-radius:14px;
+    padding:14px 28px; font-size:16px; font-weight:700; cursor:pointer;
+    font-family:'Plus Jakarta Sans',sans-serif; transition:all .2s;
+    box-shadow:0 4px 16px rgba(26,107,255,.35);
+  }
+  .btn-primary:hover { background:var(--blue-dark); transform:translateY(-2px); box-shadow:0 8px 24px rgba(26,107,255,.4); }
+  .btn-secondary {
+    background:white; color:var(--blue); border:2px solid var(--blue); border-radius:14px;
+    padding:14px 28px; font-size:16px; font-weight:700; cursor:pointer;
+    font-family:'Plus Jakarta Sans',sans-serif; transition:all .2s;
+  }
+  .btn-secondary:hover { background:var(--blue-light); }
+
+  /* Hero Card */
+  .hero-visual { display:flex; justify-content:center; align-items:center; position:relative; }
+  .card-mockup {
+    background:white; border-radius:24px; padding:28px;
+    box-shadow:var(--shadow-lg); width:320px;
+    animation:float 3s ease-in-out infinite; position:relative; z-index:2;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .card-title { font-size:13px; color:var(--gray-400); font-weight:500; }
+  .card-icon { width:36px; height:36px; border-radius:10px; background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .transfer-row { display:flex; align-items:center; gap:12px; background:var(--gray-50); border-radius:14px; padding:14px 16px; margin-bottom:12px; }
+  .ewallet-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold; color:white; flex-shrink:0; font-family:'Plus Jakarta Sans',sans-serif; }
+  .ewallet-info { flex:1; }
+  .ewallet-name { font-size:13px; font-weight:600; }
+  .ewallet-num { font-size:11px; color:var(--gray-400); margin-top:2px; }
+  .arrow-circle { width:32px; height:32px; border-radius:50%; background:var(--blue); color:white; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+  .amount-box { background:var(--blue); border-radius:14px; padding:14px 16px; color:white; display:flex; justify-content:space-between; align-items:center; }
+  .amount-label { font-size:12px; opacity:.8; }
+  .amount-value { font-size:22px; font-weight:800; font-family:'Plus Jakarta Sans',sans-serif; }
+  .status-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(0,196,140,.12); color:var(--success); padding:4px 10px; border-radius:99px; font-size:11px; font-weight:600; }
+  .chip { position:absolute; background:white; border-radius:12px; padding:10px 14px; box-shadow:0 4px 20px rgba(0,0,0,.10); font-size:12px; font-weight:600; display:flex; align-items:center; gap:8px; animation:float 3s ease-in-out infinite; }
+  .chip-1 { top:20px; right:-30px; animation-delay:.5s; }
+  .chip-2 { bottom:40px; left:-40px; animation-delay:1s; }
+
+  /* STATS */
+  .stats { background:var(--blue); padding:48px 40px; }
+  .stats-inner { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:40px; text-align:center; }
+  .stat-num { font-size:40px; font-weight:800; color:white; font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-1px; }
+  .stat-label { font-size:14px; color:rgba(255,255,255,.7); margin-top:6px; }
+
+  /* HOW IT WORKS */
+  .section { padding:96px 40px; }
+  .section-inner { max-width:1100px; margin:0 auto; }
+  .section-tag { font-size:13px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:12px; }
+  .section h2 { font-size:38px; font-weight:800; letter-spacing:-1px; margin-bottom:16px; }
+  .section .sub { font-size:16px; color:var(--gray-600); max-width:500px; line-height:1.7; }
+  .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:56px; }
+  .step { background:var(--gray-50); border-radius:var(--radius); padding:28px; transition:transform .2s,box-shadow .2s; }
+  .step:hover { transform:translateY(-4px); box-shadow:var(--shadow); }
+  .step-num { width:40px; height:40px; border-radius:12px; background:var(--blue); color:white; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; font-family:'Plus Jakarta Sans',sans-serif; margin-bottom:16px; }
+  .step h4 { font-size:16px; font-weight:700; margin-bottom:8px; }
+  .step p { font-size:14px; color:var(--gray-600); line-height:1.6; }
+
+  /* FEATURES */
+  .features-bg { background:var(--gray-50); }
+  .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:56px; }
+  .feature-card { background:white; border-radius:var(--radius); padding:32px; border:1px solid var(--gray-100); transition:transform .2s,box-shadow .2s; }
+  .feature-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); }
+  .feature-icon { width:52px; height:52px; border-radius:16px; background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:18px; }
+  .feature-card h4 { font-size:17px; font-weight:700; margin-bottom:10px; }
+  .feature-card p { font-size:14px; color:var(--gray-600); line-height:1.65; }
+
+  /* WALLETS */
+  .wallets-row { display:flex; gap:16px; flex-wrap:wrap; margin-top:40px; }
+  .wallet-pill { display:flex; align-items:center; gap:10px; background:white; border:1.5px solid var(--gray-100); border-radius:99px; padding:10px 18px; font-size:14px; font-weight:600; transition:all .2s; }
+  .wallet-pill:hover { border-color:var(--blue); box-shadow:0 2px 12px rgba(26,107,255,.12); }
+  .wallet-pill .dot { width:10px; height:10px; border-radius:50%; }
+
+  /* CTA */
+  .cta-section { background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 100%); padding:96px 40px; text-align:center; }
+  .cta-section h2 { font-size:44px; font-weight:800; color:white; letter-spacing:-1.5px; margin-bottom:16px; }
+  .cta-section p { font-size:17px; color:rgba(255,255,255,.75); margin-bottom:40px; max-width:480px; margin-left:auto; margin-right:auto; }
+  .btn-white { background:white; color:var(--blue); border:none; border-radius:14px; padding:16px 36px; font-size:17px; font-weight:800; cursor:pointer; transition:all .2s; font-family:'Plus Jakarta Sans',sans-serif; box-shadow:0 4px 20px rgba(0,0,0,.15); }
+  .btn-white:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.2); }
+
+  /* FOOTER */
+  footer { background:var(--gray-900); color:rgba(255,255,255,.6); padding:40px; text-align:center; font-size:14px; }
+  footer .brand { color:white; font-size:18px; display:block; margin-bottom:12px; }
+
+  /* ═══════════════════════════════
+     TRANSAKSI PAGE
+  ═══════════════════════════════ */
+  .tx-page { min-height:100vh; padding:100px 20px 60px; background:var(--gray-50); }
+  .tx-container { max-width:520px; margin:0 auto; }
+  .tx-header { text-align:center; margin-bottom:32px; }
+  .tx-header h2 { font-size:28px; font-weight:800; letter-spacing:-.5px; }
+  .tx-header p { font-size:15px; color:var(--gray-600); margin-top:6px; }
+  .tx-card { background:white; border-radius:24px; padding:32px; box-shadow:var(--shadow); margin-bottom:20px; }
+
+  /* Step Indicator */
+  .step-indicator { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:32px; }
+  .si-step { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
+  .si-circle { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; transition:all .3s; }
+  .si-circle.done { background:var(--blue); color:white; }
+  .si-circle.active { background:var(--blue); color:white; box-shadow:0 0 0 4px rgba(26,107,255,.2); }
+  .si-circle.pending { background:var(--gray-100); color:var(--gray-400); }
+  .si-label { font-size:11px; color:var(--gray-400); font-weight:500; }
+  .si-label.active { color:var(--blue); font-weight:700; }
+  .si-line { height:2px; flex:1; margin-bottom:22px; transition:background .3s; }
+  .si-line.done { background:var(--blue); }
+  .si-line.pending { background:var(--gray-100); }
+
+  /* Form Elements */
+  .form-label { font-size:13px; font-weight:600; color:var(--gray-600); margin-bottom:8px; display:block; font-family:'Plus Jakarta Sans',sans-serif; }
+  .form-group { margin-bottom:20px; }
+  .wallet-selector { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .wallet-opt { border:2px solid var(--gray-100); border-radius:14px; padding:14px 12px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:all .2s; background:var(--gray-50); }
+  .wallet-opt:hover { border-color:var(--blue); background:var(--blue-light); }
+  .wallet-opt.selected { border-color:var(--blue); background:var(--blue-light); }
+  .wallet-opt .w-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; color:white; font-weight:800; flex-shrink:0; font-family:'Plus Jakarta Sans',sans-serif; }
+  .wallet-opt .w-name { font-size:14px; font-weight:700; }
+  .wallet-opt .w-check { margin-left:auto; width:18px; height:18px; border-radius:50%; background:var(--blue); display:none; align-items:center; justify-content:center; color:white; font-size:10px; }
+  .wallet-opt.selected .w-check { display:flex; }
+  .form-input { width:100%; border:2px solid var(--gray-100); border-radius:14px; padding:14px 16px; font-size:15px; outline:none; transition:border-color .2s; font-family:'DM Sans',sans-serif; background:white; }
+  .form-input:focus { border-color:var(--blue); }
+
+  /* Nominal Grid */
+  .nominal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+  .nominal-btn { border:2px solid var(--gray-100); border-radius:12px; padding:10px 8px; font-size:13px; font-weight:600; cursor:pointer; background:var(--gray-50); transition:all .2s; text-align:center; font-family:'Plus Jakarta Sans',sans-serif; color:var(--gray-900); }
+  .nominal-btn:hover { border-color:var(--blue); background:var(--blue-light); color:var(--blue); }
+  .nominal-btn.selected { border-color:var(--blue); background:var(--blue); color:white; }
+
+  /* Fee Box */
+  .fee-box { background:var(--blue-light); border-radius:14px; padding:16px; margin-bottom:16px; }
+  .fee-row { display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px; }
+  .fee-row:last-child { margin-bottom:0; border-top:1px solid rgba(26,107,255,.15); padding-top:10px; margin-top:4px; }
+  .fee-row span:first-child { color:var(--gray-600); }
+  .fee-row .total-val { font-weight:800; font-size:16px; color:var(--blue); font-family:'Plus Jakarta Sans',sans-serif; }
+
+  /* Summary */
+  .summary-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--gray-100); font-size:15px; }
+  .summary-row:last-child { border-bottom:none; }
+  .summary-row .label { color:var(--gray-600); }
+  .summary-row .value { font-weight:600; }
+  .summary-row .value.blue { color:var(--blue); }
+  .summary-row .value.total { font-size:20px; font-weight:800; font-family:'Plus Jakarta Sans',sans-serif; color:var(--blue); }
+
+  /* Buttons */
+  .btn-full { width:100%; background:var(--blue); color:white; border:none; border-radius:14px; padding:16px; font-size:16px; font-weight:700; cursor:pointer; transition:all .2s; font-family:'Plus Jakarta Sans',sans-serif; margin-top:8px; box-shadow:0 4px 16px rgba(26,107,255,.3); }
+  .btn-full:hover { background:var(--blue-dark); transform:translateY(-1px); }
+  .btn-full:disabled { background:var(--gray-400); cursor:not-allowed; transform:none; box-shadow:none; }
+  .btn-outline { background:white; color:var(--blue); border:2px solid var(--blue); border-radius:14px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; transition:all .2s; font-family:'Plus Jakarta Sans',sans-serif; }
+  .btn-outline:hover { background:var(--blue-light); }
+
+  /* ═══ QRIS STEP ═══ */
+  .qr-wrap { text-align:center; }
+
+  .qr-loading {
+    background:var(--gray-50); border:2px dashed var(--gray-100);
+    border-radius:20px; padding:48px 24px; margin-bottom:20px;
+  }
+  .qr-spinner {
+    width:52px; height:52px; border:4px solid var(--gray-100);
+    border-top-color:var(--blue); border-radius:50%;
+    margin:0 auto 16px; animation:spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .qr-ready { display:none; margin-bottom:20px; }
+  .qr-ready.show { display:block; }
+
+  .qr-ready img {
+    width:220px; height:220px; border-radius:16px;
+    border:3px solid var(--blue); object-fit:contain;
+    background:white; padding:8px; box-shadow:var(--shadow-lg);
+    display:block; margin:0 auto 12px;
+  }
+
+  .qr-live-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(0,196,140,.1); color:var(--success);
+    padding:6px 14px; border-radius:99px; font-size:12px; font-weight:700;
+    margin-bottom:12px;
+  }
+  .live-dot { width:7px; height:7px; border-radius:50%; background:var(--success); animation:pulse 1.5s infinite; }
+
+  .qr-timer {
+    background:var(--blue-light); color:var(--blue); border-radius:10px;
+    padding:8px 16px; font-size:13px; font-weight:600; display:inline-block; margin-bottom:16px;
+  }
+
+  .qr-how { background:var(--gray-50); border-radius:14px; padding:16px; text-align:left; font-size:13px; color:var(--gray-600); line-height:1.7; }
+  .qr-how strong { color:var(--gray-900); }
+
+  /* Success */
+  .success-wrap { text-align:center; padding:12px 0; }
+  .success-icon {
+    width:80px; height:80px; border-radius:50%;
+    background:rgba(0,196,140,.12); color:var(--success);
+    display:flex; align-items:center; justify-content:center;
+    font-size:36px; margin:0 auto 20px;
+    animation:popIn .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .success-wrap h3 { font-size:24px; font-weight:800; margin-bottom:8px; }
+  .success-wrap p { font-size:15px; color:var(--gray-600); margin-bottom:24px; }
+  .tx-id-box { background:var(--gray-50); border-radius:12px; padding:12px 16px; font-size:13px; color:var(--gray-400); margin-bottom:24px; }
+  .tx-id-box strong { color:var(--gray-900); font-family:monospace; }
+
+  .ai-badge {
+    background:linear-gradient(135deg,var(--blue-light),#f0fff8);
+    border:1.5px solid rgba(26,107,255,.2); border-radius:12px;
+    padding:12px 14px; font-size:13px; color:var(--gray-600);
+    display:flex; align-items:flex-start; gap:10px; margin-bottom:16px;
+  }
+
+  /* Mobile */
+  @media(max-width:768px) {
+    nav { padding:16px 20px; }
+    .nav-links { display:none; }
+    .hero { padding:100px 20px 60px; }
+    .hero-inner { grid-template-columns:1fr; gap:40px; }
+    .hero h1 { font-size:36px; }
+    .hero-visual { display:none; }
+    .stats-inner { grid-template-columns:1fr; gap:24px; }
+    .steps { grid-template-columns:1fr 1fr; }
+    .features-grid { grid-template-columns:1fr; }
+    .section { padding:64px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="brand">kantong<span>bersama</span></div>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('landing')">Beranda</a></li>
+    <li><a href="#">Cara Kerja</a></li>
+    <li><a href="#">Tentang</a></li>
+  </ul>
+  <button class="nav-cta" onclick="showPage('transaksi')">Transfer Sekarang</button>
+</nav>
+
+<!-- ═══════════════════════════
+     LANDING PAGE (sama persis)
+═══════════════════════════ -->
+<div id="page-landing" class="page active">
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-badge"><span class="dot"></span> Tanpa KTP · Tanpa Ribet</div>
+        <h1>Transfer<br>E-Wallet<br><span class="accent">Buat Semua</span></h1>
+        <p>Platform transfer antar e-wallet yang mudah, cepat, dan aman. Nggak perlu KTP, nggak perlu premium. Cocok buat semua usia!</p>
+        <div class="hero-btns">
+          <button class="btn-primary" onclick="showPage('transaksi')">Transfer Sekarang →</button>
+          <button class="btn-secondary">Lihat Cara Kerja</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="card-mockup">
+          <div class="card-header">
+            <span class="card-title">Transfer Aktif</span>
+            <div class="card-icon">💸</div>
+          </div>
+          <div class="transfer-row">
+            <div class="ewallet-icon" style="background:#108EE9">D</div>
+            <div class="ewallet-info"><div class="ewallet-name">DANA</div><div class="ewallet-num">0812-xxxx-xxxx</div></div>
+            <div class="arrow-circle">→</div>
+            <div class="ewallet-icon" style="background:#00AED6">G</div>
+            <div class="ewallet-info"><div class="ewallet-name">GoPay</div><div class="ewallet-num">0856-xxxx-xxxx</div></div>
+          </div>
+          <div class="amount-box">
+            <div><div class="amount-label">Total Transfer</div><div class="amount-value">Rp 50.000</div></div>
+            <div class="status-badge">✓ Berhasil</div>
+          </div>
+        </div>
+        <div class="chip chip-1">⚡ Instan · &lt;30 detik</div>
+        <div class="chip chip-2">🔒 100% Aman</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stats-inner">
+      <div><div class="stat-num">50K+</div><div class="stat-label">Transaksi Berhasil</div></div>
+      <div><div class="stat-num">Rp 1.500</div><div class="stat-label">Fee Flat per Transaksi</div></div>
+      <div><div class="stat-num">4 E-Wallet</div><div class="stat-label">DANA · GoPay · OVO · ShopeePay</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-tag">Cara Kerja</div>
+      <h2>Transfer dalam 4 Langkah</h2>
+      <p class="sub">Prosesnya simpel banget. Dari pilih e-wallet sampai QRIS muncul, cuma butuh kurang dari 1 menit!</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><h4>Pilih E-Wallet</h4><p>Pilih e-wallet asal dan e-wallet tujuan transfer kamu.</p></div>
+        <div class="step"><div class="step-num">2</div><h4>Isi Data</h4><p>Masukkan nomor HP tujuan dan nominal transfer.</p></div>
+        <div class="step"><div class="step-num">3</div><h4>AI Buat QRIS</h4><p>Sistem AI kami otomatis generate QRIS dalam hitungan detik!</p></div>
+        <div class="step"><div class="step-num">4</div><h4>Scan & Selesai</h4><p>Scan QRIS dari e-wallet asal kamu. Saldo langsung masuk!</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section features-bg">
+    <div class="section-inner">
+      <div class="section-tag">Keunggulan</div>
+      <h2>Kenapa Kantong Bersama?</h2>
+      <p class="sub">Dirancang khusus buat semua orang — terutama yang belum bisa transfer langsung dari e-wallet mereka.</p>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">🪪</div><h4>Tanpa KTP</h4><p>Nggak perlu verifikasi KTP atau upgrade premium. Langsung bisa transfer kapan aja.</p></div>
+        <div class="feature-card"><div class="feature-icon">🤖</div><h4>AI Generate QRIS</h4><p>Sistem AI kami otomatis buat QRIS sesuai nominal. Cepat, akurat, tanpa drama!</p></div>
+        <div class="feature-card"><div class="feature-icon">🔒</div><h4>Aman & Terpercaya</h4><p>Semua transaksi diproses lewat sistem QRIS resmi Bank Indonesia.</p></div>
+        <div class="feature-card"><div class="feature-icon">💰</div><h4>Fee Transparan</h4><p>Cuma Rp 1.500 flat per transaksi. Nggak ada biaya tersembunyi sama sekali.</p></div>
+        <div class="feature-card"><div class="feature-icon">📱</div><h4>Semua E-Wallet</h4><p>Support DANA, GoPay, OVO, dan ShopeePay. Mau transfer ke mana aja bisa!</p></div>
+        <div class="feature-card"><div class="feature-icon">🕐</div><h4>24/7 Online</h4><p>Layanan aktif 24 jam sehari, 7 hari seminggu. Mau transfer tengah malam pun bisa.</p></div>
+      </div>
+      <div style="margin-top:48px;">
+        <div class="section-tag">E-Wallet yang Didukung</div>
+        <div class="wallets-row">
+          <div class="wallet-pill"><span class="dot" style="background:#108EE9"></span>DANA</div>
+          <div class="wallet-pill"><span class="dot" style="background:#00AED6"></span>GoPay</div>
+          <div class="wallet-pill"><span class="dot" style="background:#4C3494"></span>OVO</div>
+          <div class="wallet-pill"><span class="dot" style="background:#EE4D2D"></span>ShopeePay</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2>Siap Transfer Sekarang?</h2>
+    <p>Gratis daftar, langsung bisa pakai. Nggak perlu KTP, nggak perlu tunggu lama.</p>
+    <button class="btn-white" onclick="showPage('transaksi')">Mulai Transfer →</button>
+  </section>
+
+  <footer>
+    <span class="brand">kantongbersama</span>
+    <p>© 2025 Kantong Bersama. Platform transfer e-wallet untuk semua usia.</p>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════
+     TRANSAKSI PAGE (upgraded)
+═══════════════════════════ -->
+<div id="page-transaksi" class="page">
+  <div class="tx-page">
+    <div class="tx-container">
+
+      <div class="tx-header">
+        <h2>Transfer E-Wallet</h2>
+        <p>Tanpa KTP · Tanpa Premium · Cuma Rp 1.500</p>
+      </div>
+
+      <!-- Step Indicator -->
+      <div class="step-indicator">
+        <div class="si-step"><div class="si-circle active" id="sc1">1</div><div class="si-label active" id="sl1">E-Wallet</div></div>
+        <div class="si-line pending" id="ln1"></div>
+        <div class="si-step"><div class="si-circle pending" id="sc2">2</div><div class="si-label" id="sl2">Nominal</div></div>
+        <div class="si-line pending" id="ln2"></div>
+        <div class="si-step"><div class="si-circle pending" id="sc3">3</div><div class="si-label" id="sl3">Konfirmasi</div></div>
+        <div class="si-line pending" id="ln3"></div>
+        <div class="si-step"><div class="si-circle pending" id="sc4">4</div><div class="si-label" id="sl4">QRIS</div></div>
+      </div>
+
+      <!-- ── STEP 1: Pilih Wallet ── -->
+      <div class="tx-card" id="txStep1">
+        <div class="form-group">
+          <label class="form-label">Dari E-Wallet (Sumber pembayaran kamu)</label>
+          <div class="wallet-selector" id="fromWallet">
+            <div class="wallet-opt" onclick="selectWallet('from','DANA','#108EE9','D',this)"><div class="w-icon" style="background:#108EE9">D</div><div class="w-name">DANA</div><div class="w-check">✓</div></div>
+            <div class="wallet-opt" onclick="selectWallet('from','GoPay','#00AED6','G',this)"><div class="w-icon" style="background:#00AED6">G</div><div class="w-name">GoPay</div><div class="w-check">✓</div></div>
+            <div class="wallet-opt" onclick="selectWallet('from','OVO','#4C3494','O',this)"><div class="w-icon" style="background:#4C3494">O</div><div class="w-name">OVO</div><div class="w-check">✓</div></div>
+            <div class="wallet-opt" onclick="selectWallet('from','ShopeePay','#EE4D2D','S',this)"><div class="w-icon" style="background:#EE4D2D">S</div><div class="w-name">ShopeePay</div><div class="w-check">✓</div></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ke E-Wallet (Tujuan transfer)</label>
+          <div class="wallet-selector" id="toWallet">
+            <div class="wallet-opt" onclick="selectWallet('to','DANA','#108EE9','D',this)"><div class="w-icon" style="background:#108EE9">D</div><div class="w-name">DANA</div><div class="w-check">✓</div></div>
+            <div class="wallet-opt" onclick="selectWallet('to','GoPay','#00AED6','G',this)"><div class="w-icon" style="background:#00AED6">G</div><div class="w-name">GoPay</div><div class="w-check">✓</div></div>
+            <div class="wallet-opt" onclick="selectWallet('to','OVO','#4C3494','O',this)"><div class="w-icon" style="background:#4C3494">O</div><div class="w-name">OVO</div><div class="w-check">✓</div></div>
+            <div class="wallet-opt" onclick="selectWallet('to','ShopeePay','#EE4D2D','S',this)"><div class="w-icon" style="background:#EE4D2D">S</div><div class="w-name">ShopeePay</div><div class="w-check">✓</div></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nomor HP Tujuan</label>
+          <input type="tel" class="form-input" id="phoneInput" placeholder="Contoh: 08123456789" maxlength="13" oninput="validateStep1()">
+        </div>
+        <button class="btn-full" id="btn1" onclick="goStep(2)" disabled>Lanjut →</button>
+      </div>
+
+      <!-- ── STEP 2: Nominal ── -->
+      <div class="tx-card" id="txStep2" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Pilih atau Masukkan Nominal</label>
+          <div class="nominal-grid">
+            <button class="nominal-btn" onclick="pilihNominal(10000,this)">10rb</button>
+            <button class="nominal-btn" onclick="pilihNominal(20000,this)">20rb</button>
+            <button class="nominal-btn" onclick="pilihNominal(25000,this)">25rb</button>
+            <button class="nominal-btn" onclick="pilihNominal(50000,this)">50rb</button>
+            <button class="nominal-btn" onclick="pilihNominal(100000,this)">100rb</button>
+            <button class="nominal-btn" onclick="pilihNominal(200000,this)">200rb</button>
+          </div>
+          <div style="position:relative; margin-top:4px;">
+            <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);font-weight:600;color:var(--gray-600);font-size:15px;">Rp</span>
+            <input type="number" class="form-input" id="nominalInput" placeholder="Nominal lainnya..." min="1000" oninput="updateFee(this.value)" style="padding-left:40px;">
+          </div>
+          <div style="font-size:12px;color:var(--gray-400);margin-top:6px;">Minimal transfer Rp 1.000</div>
+        </div>
+
+        <div id="feeBox" style="display:none" class="fee-box">
+          <div class="fee-row"><span>Jumlah transfer</span><span id="feeNominal">–</span></div>
+          <div class="fee-row"><span>Biaya admin</span><span>Rp 1.500</span></div>
+          <div class="fee-row"><span style="font-weight:800;color:var(--gray-900);">Total Bayar</span><span class="total-val" id="feeTotal">–</span></div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button class="btn-outline" onclick="goStep(1)" style="width:auto;padding:14px 20px;">← Kembali</button>
+          <button class="btn-full" id="btn2" onclick="goStep(3)" disabled style="margin-top:0">Lanjut →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 3: Konfirmasi ── -->
+      <div class="tx-card" id="txStep3" style="display:none">
+        <div style="font-size:13px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Konfirmasi Transfer</div>
+        <div class="summary-row"><span class="label">Dari</span><span class="value" id="sumFrom">–</span></div>
+        <div class="summary-row"><span class="label">Ke</span><span class="value" id="sumTo">–</span></div>
+        <div class="summary-row"><span class="label">Nomor Tujuan</span><span class="value" id="sumPhone">–</span></div>
+        <div class="summary-row"><span class="label">Nominal Transfer</span><span class="value blue" id="sumNominal">–</span></div>
+        <div class="summary-row"><span class="label">Biaya Admin</span><span class="value">Rp 1.500</span></div>
+        <div class="summary-row"><span class="label" style="font-weight:800;color:var(--gray-900);">Total Bayar</span><span class="value total" id="sumTotal">–</span></div>
+
+        <div class="ai-badge" style="margin-top:16px;">
+          <span>🤖</span>
+          <span>Setelah konfirmasi, sistem AI kami akan otomatis generate QRIS sesuai nominal dalam hitungan detik.</span>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button class="btn-outline" onclick="goStep(2)" style="width:auto;padding:14px 20px;">← Kembali</button>
+          <button class="btn-full" onclick="submitOrder()" style="margin-top:0">🔒 Konfirmasi & Bayar</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 4: QRIS ── -->
+      <div class="tx-card" id="txStep4" style="display:none">
+        <div class="qr-wrap">
+
+          <!-- Loading -->
+          <div class="qr-loading" id="qrLoading">
+            <div class="qr-spinner"></div>
+            <div style="font-size:15px;font-weight:700;color:var(--gray-900);margin-bottom:6px;">Sistem AI sedang membuat QRIS...</div>
+            <div style="font-size:13px;color:var(--gray-600);">Biasanya kurang dari 30 detik ⚡</div>
+          </div>
+
+          <!-- QRIS Ready -->
+          <div class="qr-ready" id="qrReady">
+            <div class="qr-live-badge"><span class="live-dot"></span> QRIS Siap — Scan Sekarang!</div>
+            <img id="qrImg" src="" alt="QRIS">
+            <div class="qr-timer" id="qrTimer">⏱️ Berlaku 15:00</div>
+          </div>
+
+          <!-- Cara bayar -->
+          <div class="qr-how" id="qrHow" style="display:none">
+            <strong>Cara bayar:</strong><br>
+            1. Buka aplikasi <strong id="qrFromLabel">e-wallet</strong> kamu<br>
+            2. Tap <strong>Scan QR</strong> atau <strong>QRIS</strong><br>
+            3. Arahkan ke QRIS di atas<br>
+            4. Konfirmasi bayar <strong>Rp <span id="qrTotalLabel">–</span></strong>
+          </div>
+
+          <!-- Success -->
+          <div class="success-wrap" id="qrSuccess" style="display:none">
+            <div class="success-icon">✅</div>
+            <h3>Transfer Berhasil!</h3>
+            <p id="successDesc">Saldo sedang dikirim ke tujuan.</p>
+            <div class="tx-id-box">ID Transaksi: <strong id="txIdLabel">–</strong></div>
+            <button class="btn-full" onclick="resetAll()">Transfer Lagi</button>
+            <button class="btn-outline" onclick="showPage('landing')" style="margin-top:10px;width:100%;">Kembali ke Beranda</button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG — ganti setelah dapat URL Railway
+// ═══════════════════════════════════════
+const BACKEND_WS   = 'wss://YOUR-RAILWAY-URL.railway.app/ws';
+const BACKEND_HTTP = 'https://YOUR-RAILWAY-URL.railway.app';
+const ADMIN_FEE    = 1500;
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let S = {
+  fromWallet: null, toWallet: null,
+  phone: '', nominal: 0,
+  orderId: null, ws: null, timer: null
+};
+
+// ═══════════════════════════════════════
+// PAGE
+// ═══════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'transaksi') resetAll();
+}
+
+// ═══════════════════════════════════════
+// STEPS
+// ═══════════════════════════════════════
+function goStep(n) {
+  [1,2,3,4].forEach(i => {
+    document.getElementById('txStep' + i).style.display = i === n ? 'block' : 'none';
+  });
+  updateIndicator(n);
+  window.scrollTo(0, 0);
+  if (n === 3) fillSummary();
+}
+
+function updateIndicator(active) {
+  [1,2,3,4].forEach(i => {
+    const c = document.getElementById('sc' + i);
+    const l = document.getElementById('sl' + i);
+    if (i < active)      { c.className = 'si-circle done'; c.textContent = '✓'; l.className = 'si-label'; }
+    else if (i === active){ c.className = 'si-circle active'; c.textContent = i; l.className = 'si-label active'; }
+    else                 { c.className = 'si-circle pending'; c.textContent = i; l.className = 'si-label'; }
+    if (i < 4) document.getElementById('ln' + i).className = 'si-line ' + (i < active ? 'done' : 'pending');
+  });
+}
+
+// ═══════════════════════════════════════
+// WALLET SELECT
+// ═══════════════════════════════════════
+function selectWallet(type, name, color, icon, el) {
+  const id = type === 'from' ? 'fromWallet' : 'toWallet';
+  document.querySelectorAll('#' + id + ' .wallet-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  if (type === 'from') S.fromWallet = { name, color, icon };
+  else S.toWallet = { name, color, icon };
+  validateStep1();
+}
+
+function validateStep1() {
+  S.phone = document.getElementById('phoneInput').value;
+  document.getElementById('btn1').disabled = !(S.fromWallet && S.toWallet && S.phone.length >= 10);
+}
+
+// ═══════════════════════════════════════
+// NOMINAL
+// ═══════════════════════════════════════
+function pilihNominal(n, el) {
+  document.querySelectorAll('.nominal-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('nominalInput').value = '';
+  S.nominal = n;
+  showFee(n);
+}
+
+function updateFee(val) {
+  document.querySelectorAll('.nominal-btn').forEach(b => b.classList.remove('selected'));
+  const n = parseInt(val) || 0;
+  S.nominal = n;
+  if (n >= 1000) showFee(n);
+  else hideFee();
+}
+
+function showFee(n) {
+  const total = n + ADMIN_FEE;
+  document.getElementById('feeBox').style.display = 'block';
+  document.getElementById('feeNominal').textContent = 'Rp ' + n.toLocaleString('id-ID');
+  document.getElementById('feeTotal').textContent   = 'Rp ' + total.toLocaleString('id-ID');
+  document.getElementById('btn2').disabled = false;
+}
+
+function hideFee() {
+  document.getElementById('feeBox').style.display = 'none';
+  document.getElementById('btn2').disabled = true;
+}
+
+// ═══════════════════════════════════════
+// SUMMARY
+// ═══════════════════════════════════════
+function fillSummary() {
+  const total = S.nominal + ADMIN_FEE;
+  document.getElementById('sumFrom').textContent    = S.fromWallet.name;
+  document.getElementById('sumTo').textContent      = S.toWallet.name;
+  document.getElementById('sumPhone').textContent   = S.phone;
+  document.getElementById('sumNominal').textContent = 'Rp ' + S.nominal.toLocaleString('id-ID');
+  document.getElementById('sumTotal').textContent   = 'Rp ' + total.toLocaleString('id-ID');
+}
+
+// ═══════════════════════════════════════
+// SUBMIT ORDER
+// ═══════════════════════════════════════
+async function submitOrder() {
+  goStep(4);
+
+  // Set label QRIS step
+  document.getElementById('qrFromLabel').textContent  = S.fromWallet.name;
+  document.getElementById('qrTotalLabel').textContent = (S.nominal + ADMIN_FEE).toLocaleString('id-ID');
+
+  try {
+    const res = await fetch(BACKEND_HTTP + '/api/order/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        wallet: S.toWallet.name.toLowerCase().replace(' ', ''),
+        phone:  S.phone,
+        nominal: S.nominal
+      })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    S.orderId = data.orderId;
+    connectWS(data.orderId);
+
+  } catch (err) {
+    // Backend belum aktif → simulasi QRIS
+    console.warn('Backend offline, simulasi:', err.message);
+    S.orderId = 'SIM-' + Date.now();
+    simulateQris();
+  }
+}
+
+// ═══════════════════════════════════════
+// WEBSOCKET
+// ═══════════════════════════════════════
+function connectWS(orderId) {
+  try {
+    const ws = new WebSocket(BACKEND_WS);
+    S.ws = ws;
+
+    ws.onopen = () => ws.send(JSON.stringify({ type: 'subscribe', orderId }));
+
+    ws.onmessage = (e) => {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'qris_ready'      && msg.orderId === orderId) showQris(msg.qris);
+      if (msg.type === 'order_completed' && msg.orderId === orderId) showSuccess();
+    };
+
+    ws.onerror = () => simulateQris();
+  } catch (e) { simulateQris(); }
+}
+
+// ═══════════════════════════════════════
+// TAMPIL QRIS
+// ═══════════════════════════════════════
+function showQris(src) {
+  document.getElementById('qrLoading').style.display = 'none';
+  document.getElementById('qrImg').src = src;
+  document.getElementById('qrReady').classList.add('show');
+  document.getElementById('qrHow').style.display = 'block';
+  startTimer(15 * 60);
+}
+
+function startTimer(sec) {
+  if (S.timer) clearInterval(S.timer);
+  S.timer = setInterval(() => {
+    sec--;
+    const m = String(Math.floor(sec / 60)).padStart(2,'0');
+    const s = String(sec % 60).padStart(2,'0');
+    document.getElementById('qrTimer').textContent = `⏱️ Berlaku ${m}:${s}`;
+    if (sec <= 0) { clearInterval(S.timer); document.getElementById('qrTimer').textContent = '⚠️ QRIS Kedaluwarsa'; }
+  }, 1000);
+}
+
+function showSuccess() {
+  if (S.timer) clearInterval(S.timer);
+  document.getElementById('qrReady').classList.remove('show');
+  document.getElementById('qrHow').style.display   = 'none';
+  document.getElementById('qrLoading').style.display = 'none';
+  document.getElementById('successDesc').textContent =
+    `${S.nominal.toLocaleString('id-ID')} berhasil dikirim ke ${S.toWallet.name} ${S.phone}!`;
+  document.getElementById('txIdLabel').textContent   = S.orderId;
+  document.getElementById('qrSuccess').style.display = 'block';
+}
+
+// ═══════════════════════════════════════
+// SIMULASI (saat backend belum aktif)
+// ═══════════════════════════════════════
+function simulateQris() {
+  setTimeout(() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 240;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, 240, 240);
+    ctx.fillStyle = '#000';
+
+    // Generate QR pattern random
+    const cell = 8, off = 20, cols = 25;
+    for (let r = 0; r < cols; r++) {
+      for (let col = 0; col < cols; col++) {
+        if (isQrCorner(r, col, cols) || Math.random() > 0.55) {
+          ctx.fillRect(off + col * cell, off + r * cell, cell - 1, cell - 1);
+        }
+      }
+    }
+
+    // Corner markers
+    [[0,0],[0,cols-7],[cols-7,0]].forEach(([r,c]) => {
+      ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
+      ctx.strokeRect(off + c*cell, off + r*cell, 7*cell, 7*cell);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(off + c*cell + cell, off + r*cell + cell, 5*cell, 5*cell);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(off + c*cell + 2*cell, off + r*cell + 2*cell, 3*cell, 3*cell);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(off + c*cell + 3*cell - 3, off + r*cell + 3*cell - 3, 6, 6);
+    });
+
+    // Label bawah
+    ctx.fillStyle = '#1A6BFF';
+    ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center';
+    ctx.fillText('QRIS · kantongbersama', 120, 232);
+
+    showQris(c.toDataURL());
+  }, 2500);
+}
+
+function isQrCorner(r, c, n) {
+  return (r < 7 && c < 7) || (r < 7 && c >= n-7) || (r >= n-7 && c < 7);
+}
+
+// ═══════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════
+function resetAll() {
+  if (S.ws)    S.ws.close();
+  if (S.timer) clearInterval(S.timer);
+
+  S = { fromWallet:null, toWallet:null, phone:'', nominal:0, orderId:null, ws:null, timer:null };
+
+  document.querySelectorAll('.wallet-opt').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('.nominal-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('phoneInput').value   = '';
+  document.getElementById('nominalInput').value = '';
+  document.getElementById('feeBox').style.display   = 'none';
+  document.getElementById('btn1').disabled = true;
+  document.getElementById('btn2').disabled = true;
+
+  // Reset QRIS step
+  document.getElementById('qrLoading').style.display = 'block';
+  document.getElementById('qrReady').classList.remove('show');
+  document.getElementById('qrHow').style.display    = 'none';
+  document.getElementById('qrSuccess').style.display = 'none';
+  document.getElementById('qrImg').src = '';
+
+  goStep(1);
+}
+</script>
+</body>
+</html>
